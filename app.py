@@ -3,6 +3,7 @@ import pandas as pd
 import fitz  # PyMuPDF
 import html
 from llm_engine import process_text
+from database import MOCK_STUDENTS, MOCK_COURSES
 
 # Page Config
 st.set_page_config(
@@ -729,6 +730,29 @@ except Exception:
 st.sidebar.markdown("""<div class="sidebar-section">Input Configuration</div>""", unsafe_allow_html=True)
 input_mode = st.sidebar.radio("Input Type", ["Use course material", "Describe your lesson"])
 language_direction = st.sidebar.radio("Language Support", ["English → Finnish", "Finnish → English"])
+selected_student = st.sidebar.selectbox(
+    "Select student profile",
+    MOCK_STUDENTS,
+    format_func=lambda x: x["name"]
+)
+
+# Styled Student Profile Card
+st.sidebar.markdown(f"""
+    <div class="sidebar-brand" style="padding: 1rem; margin-top: 0.5rem; background: var(--bg-card); border: 1px solid var(--border-soft);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="font-size: 1.5rem;">{selected_student.get('avatar', '👤')}</span>
+            <div style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary);">{selected_student['program']}</div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;">
+            <span class="difficulty-chip" style="font-size: 0.65rem; padding: 0.2rem 0.5rem;">Year {selected_student['year']}</span>
+            <span class="term-chip" style="font-size: 0.65rem; padding: 0.2rem 0.5rem; background: var(--bg-soft-blue); color: var(--blue-deep); border: 1px solid var(--border-soft);">{selected_student['cefr']} LEVEL</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4;">
+            <strong>Prior Knowledge:</strong> {", ".join(selected_student['completed_courses']) if selected_student['completed_courses'] else "None"}<br>
+            <div style="margin-top: 5px; color: var(--blue-deep);"><strong>Goal:</strong> {selected_student.get('goal', 'N/A')}</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown("""
     <div class="sidebar-section" style="margin-top: 1.45rem;">Source Content</div>
@@ -745,9 +769,16 @@ if input_mode == "Use course material":
         placeholder="Paste a paragraph from a lecture, article, or course material..."
     )
 else:
+    selected_course = st.sidebar.selectbox(
+        "Choose curriculum template",
+        MOCK_COURSES,
+        format_func=lambda x: x["name"]
+    )
+    
     input_text = st.sidebar.text_area(
         "Describe your lesson (topic, students, goals, materials):",
         height=300,
+        value=selected_course["description"],
         placeholder="e.g., A lesson about handwashing for first-year nursing students. Focus on hygiene and microbiology terms."
     )
 
@@ -804,7 +835,8 @@ if generate_button:
                     source_text, 
                     model_type=selected_model,
                     input_mode=input_mode,
-                    language_direction=language_direction
+                    language_direction=language_direction,
+                    selected_student=selected_student
                 )
                 st.session_state.source_text_cache = source_text # Cache source text too
                 st.session_state.lang_dir_cache = language_direction # Cache language direction

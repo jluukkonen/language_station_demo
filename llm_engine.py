@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 import google.generativeai as genai
 import streamlit as st
@@ -54,7 +54,13 @@ def get_system_prompt() -> str:
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 
-def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: str = "Use course material", language_direction: str = "English → Finnish") -> LanguageStationOutput:
+def process_text(
+    text: str,
+    model_type: str = "gemini-2.5-flash",
+    input_mode: str = "Use course material",
+    language_direction: str = "English → Finnish",
+    selected_student: Optional[Dict[str, Any]] = None
+) -> LanguageStationOutput:
     """
     Processes the raw input using Google Gemini Structured Outputs.
     Adapts to 'Course Material' or 'Lesson Description' modes.
@@ -65,8 +71,27 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: st
     
     system_prompt = get_system_prompt()
     
+    completed_courses = ""
+    if selected_student:
+        completed_courses = ", ".join(selected_student.get("completed_courses", [])) or "None"
+
+    student_context = ""
+    if selected_student:
+        student_context = f"""
+Student profile:
+- Year: {selected_student['year']}
+- Program: {selected_student['program']}
+- Completed courses: {completed_courses}
+- Language level: {selected_student['cefr']}
+"""
+
     # Context Injection for the LLM
-    context_prefix = f"### TASK CONTEXT ###\nInput Mode: {input_mode}\nLanguage Focus: {language_direction}\n\n"
+    context_prefix = (
+        f"### TASK CONTEXT ###\n"
+        f"Input Mode: {input_mode}\n"
+        f"Language Focus: {language_direction}\n"
+        f"{student_context}\n"
+    )
     
     # Initialize the model with the response schema
     model = genai.GenerativeModel(model_name=model_type)
@@ -82,6 +107,8 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: st
     full_prompt = f"""
 {context_prefix}
 {system_prompt}
+
+Adapt all outputs (especially activities and simplified text) to the student's level, program, and prior knowledge.
 
 --- USER INPUT START ---
 {truncated_text}
