@@ -52223,7 +52223,6 @@ TERO_DICTIONARY = {
 }
 
 KOKO_DICTIONARY = {
-    '': 'Keltainen kirjasto',
     '"scandinavian" whitebean': 'teodorinpihlaja',
     '"starting at" price': 'alkaen-hinnat',
     '(european / swiss ) mountain pine': 'vuorimänty',

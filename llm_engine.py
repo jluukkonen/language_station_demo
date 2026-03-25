@@ -104,18 +104,14 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: st
             verified_value = None
 
             if language_direction == "English → Finnish":
-                # Normal Lookup (Key -> Value)
+                # Exact O(1) Lookup (Key -> Value)
                 if term_key in VERIFIED_TERMS:
                     verified_value = VERIFIED_TERMS[term_key]
-                else:
-                    for key, val in VERIFIED_TERMS.items():
-                        if key in term_key:
-                            verified_value = val
-                            break
             else:
-                # Reverse Lookup (Value -> Key) for Finnish → English
+                # Exact Reverse Lookup (Value -> Key) for Finnish → English
+                # Note: We iterate since we don't have a reverse map, but use exact comparison
                 for key, val in VERIFIED_TERMS.items():
-                    if val.lower() == term_key or val.lower() in term_key:
+                    if val.lower() == term_key:
                         verified_value = key
                         break
             
