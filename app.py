@@ -720,6 +720,24 @@ else:
 st.sidebar.markdown("### Generate Language Station")
 generate_button = st.sidebar.button("Generate Language Station", type="primary")
 
+# Data Attribution & Licensing (Small, muted text for compliance)
+st.sidebar.markdown("""
+    <div style="margin-top: 3rem; border-top: 1px solid rgba(22, 35, 58, 0.1); padding-top: 1rem;">
+        <p style="font-size: 11px; font-weight: 700; color: #6c757d; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Data Attribution Notice</p>
+        <p style="font-size: 10px; color: #6c757d; line-height: 1.5; margin-bottom: 10px;">
+            This terminology dataset utilizes deterministic mappings to ensure clinical and academic reliability. It includes content from the following authoritative sources:
+        </p>
+        <ul style="font-size: 10px; color: #6c757d; line-height: 1.5; padding-left: 14px; margin-bottom: 10px;">
+            <li><strong>Finto.fi / National Library of Finland:</strong> YSO, KOKO, and TERO Ontologies. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY 4.0</a>.</li>
+            <li><strong>FinMeSH:</strong> Finnish translation of Medical Subject Headings. Produced by the National Library of Finland. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY 4.0</a>. (Original MeSH data courtesy of the U.S. National Library of Medicine).</li>
+            <li><strong>Tieteen termipankki / Sanastokeskus:</strong> Various domain-specific vocabularies. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY-SA 4.0</a>.</li>
+        </ul>
+        <p style="font-size: 10px; color: #6c757d; font-style: italic; line-height: 1.4;">
+            <strong>Disclaimer:</strong> This data is utilized as-is for terminology mapping purposes. Providers bear no responsibility for any modifications or applications of this tool.
+        </p>
+    </div>
+""", unsafe_allow_html=True)
+
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
     text = ""
@@ -765,7 +783,15 @@ if st.session_state.result:
     source_text = st.session_state.get('source_text_cache', "")
     source_word_count = max(len(source_text.split()), 1)
     simplified_word_count = len(result.simplified_text.split())
-    simplification_delta = max(0, round((1 - (simplified_word_count / source_word_count)) * 100))
+    
+    if source_word_count < 100:
+        simplification_delta = f"{simplified_word_count} w"
+        simplification_label = "Material Generated"
+        simplification_copy = "Length of the generated classroom material."
+    else:
+        simplification_delta = f"{max(0, round((1 - (simplified_word_count / source_word_count)) * 100))}%"
+        simplification_label = "Simplification"
+        simplification_copy = "Estimated reduction in language complexity for classroom access."
     
     st.markdown("""
         <div class="status-banner">
@@ -783,9 +809,9 @@ if st.session_state.result:
                 <p class="kpi-copy">Priority terminology identified for multilingual support.</p>
             </div>
             <div class="kpi-tile accent-green">
-                <p class="kpi-label">Simplification</p>
-                <p class="kpi-value">{simplification_delta}%</p>
-                <p class="kpi-copy">Estimated reduction in language complexity for classroom access.</p>
+                <p class="kpi-label">{simplification_label}</p>
+                <p class="kpi-value">{simplification_delta}</p>
+                <p class="kpi-copy">{simplification_copy}</p>
             </div>
             <div class="kpi-tile">
                 <p class="kpi-label">Learning Activities</p>
@@ -799,12 +825,6 @@ if st.session_state.result:
             </div>
         </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Key Terms", len(result.glossary))
-    col2.metric("Activities", len(result.pedagogy_suggestions))
-    col3.metric("Level", "CEFR B1")
-    col4.metric("Teacher Time Saved", "Hours to Seconds")
     
     # Tabs
     tab1, tab2, tab3 = st.tabs([
