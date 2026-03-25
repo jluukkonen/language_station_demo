@@ -3,27 +3,34 @@ import json
 from typing import List, Optional
 from pydantic import BaseModel, Field
 import google.generativeai as genai
+import streamlit as st
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables locally
 load_dotenv()
 
-# Initialize Gemini client
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Initialize Gemini client (check OS env first, fallback to Streamlit secrets)
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        pass
+genai.configure(api_key=api_key)
 
-# Verified terminology dictionary for deterministic mapping (Health Sciences / Nursing)
+# Verified terminology dictionary sourced from FINTO (Finnish Thesaurus and Ontology Service) / MeSH
 VERIFIED_TERMS = {
     "pathogenesis": "patogeneesi",
     "epidemiology": "epidemiologia",
     "microbiology": "mikrobiologia",
-    "praxis": "praksis",
     "etiology": "etiologia",
     "diagnosis": "diagnoosi",
     "prognosis": "ennuste",
-    "therapy": "terapia",
+    "staphylococcus aureus": "Staphylococcus aureus",
+    "nosocomial infection": "sairaalainfektio",
+    "multidrug-resistant": "moniresistentti",
     "morbidity": "sairastavuus",
     "mortality": "kuolleisuus",
-    "clinical": "kliininen",
     "evidence-based": "näyttöön perustuva"
 }
 
@@ -126,10 +133,12 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: st
         
         return result
     except Exception as e:
+        # Prevent UnboundLocalError if response failed completely
+        raw = response.text if 'response' in locals() else str(e)
         # Fallback error handling
         return LanguageStationOutput(
             glossary=[],
-            simplified_text=f"⚠️ Parsing error: Could not generate simplified text. Raw: {response.text}",
+            simplified_text=f"⚠️ Processing Error: {raw}",
             pedagogy_suggestions=[]
         )
 
