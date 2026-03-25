@@ -11,12 +11,29 @@ load_dotenv()
 # Initialize Gemini client
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
+# Verified terminology dictionary for deterministic mapping (Health Sciences / Nursing)
+VERIFIED_TERMS = {
+    "pathogenesis": "patogeneesi",
+    "epidemiology": "epidemiologia",
+    "microbiology": "mikrobiologia",
+    "praxis": "praksis",
+    "etiology": "etiologia",
+    "diagnosis": "diagnoosi",
+    "prognosis": "ennuste",
+    "therapy": "terapia",
+    "morbidity": "sairastavuus",
+    "mortality": "kuolleisuus",
+    "clinical": "kliininen",
+    "evidence-based": "näyttöön perustuva"
+}
+
 class GlossaryItem(BaseModel):
     term: str = Field(description="A short academic term or key phrase (strictly 1 to 4 words max) extracted from the source text.")
     academic_definition: str = Field(description="A concise academic definition of the term.")
-    finnish_translation: str = Field(description="The Finnish translation of the term in its specific academic context.")
     simple_definition: str = Field(description="A simple A2/B1 level explanation of the term.")
     cognitive_note: str = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use).")
+    # Added post-generation via static mapping
+    finnish_translation: Optional[str] = Field(default="Not found in verified terminology")
 
 class PedagogySuggestion(BaseModel):
     activity_name: str = Field(description="The catchy name of the translanguaging classroom activity.")
@@ -33,15 +50,19 @@ def get_system_prompt() -> str:
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 
-def process_text(text: str, model_type: str = "gemini-2.5-flash") -> LanguageStationOutput:
+def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: str = "Use course material", language_direction: str = "English → Finnish") -> LanguageStationOutput:
     """
-    Processes the raw academic text using Google Gemini Structured Outputs.
-    Uses Pydantic Field descriptions and GenerationConfig for maximum robustness.
+    Processes the raw input using Google Gemini Structured Outputs.
+    Adapts to 'Course Material' or 'Lesson Description' modes.
+    Implements bidirectional (EN<->FI) terminology verification.
     """
     # Truncate to ~4000 words / 15000 chars
     truncated_text = text[:15000]
     
     system_prompt = get_system_prompt()
+    
+    # Context Injection for the LLM
+    context_prefix = f"### TASK CONTEXT ###\nInput Mode: {input_mode}\nLanguage Focus: {language_direction}\n\n"
     
     # Initialize the model with the response schema
     model = genai.GenerativeModel(model_name=model_type)
@@ -53,13 +74,14 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash") -> LanguageSta
         temperature=0.4
     )
     
-    # Combine system prompt and user text
+    # Combine context, system prompt and user input
     full_prompt = f"""
+{context_prefix}
 {system_prompt}
 
---- SOURCE TEXT START ---
+--- USER INPUT START ---
 {truncated_text}
---- SOURCE TEXT END ---
+--- USER INPUT END ---
 """
     
     response = model.generate_content(
@@ -70,7 +92,39 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash") -> LanguageSta
     # Parse the JSON response
     try:
         json_data = json.loads(response.text)
-        return LanguageStationOutput(**json_data)
+        result = LanguageStationOutput(**json_data)
+        
+        # Surgical Pivot: Deterministic Bidirectional Translation Mapping
+        for item in result.glossary:
+            term_key = item.term.lower().strip()
+            found = False
+
+            if language_direction == "English → Finnish":
+                # Normal Lookup (Key -> Value)
+                if term_key in VERIFIED_TERMS:
+                    item.finnish_translation = VERIFIED_TERMS[term_key]
+                    found = True
+                else:
+                    for key, val in VERIFIED_TERMS.items():
+                        if key in term_key:
+                            item.finnish_translation = val
+                            found = True
+                            break
+            
+            else:
+                # Reverse Lookup (Value -> Key) for Finnish → English
+                # We still store it in the 'finnish_translation' field because the Pydantic schema is fixed
+                # The UI will label it correctly based on the mode.
+                for key, val in VERIFIED_TERMS.items():
+                    if val.lower() == term_key or val.lower() in term_key:
+                        item.finnish_translation = key # This is the English equivalent
+                        found = True
+                        break
+            
+            if not found:
+                item.finnish_translation = "Not found in verified terminology"
+        
+        return result
     except Exception as e:
         # Fallback error handling
         return LanguageStationOutput(

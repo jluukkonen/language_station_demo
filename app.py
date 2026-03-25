@@ -103,7 +103,7 @@ st.markdown("""
     }
 
     .sidebar-section {
-        margin: 1rem 0 0.5rem 0;
+        margin: 1.15rem 0 0.65rem 0;
         font-size: 0.74rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -231,16 +231,17 @@ st.markdown("""
 
     .stat-label {
         color: var(--text-secondary);
-        font-size: 0.78rem;
+        font-size: clamp(0.66rem, 0.61rem + 0.22vw, 0.78rem);
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.12em;
         margin-bottom: 0.6rem;
+        line-height: 1.35;
     }
 
     .stat-value {
         color: var(--text-primary);
-        font-size: 2rem;
+        font-size: clamp(1.4rem, 1.08rem + 0.9vw, 2rem);
         line-height: 1;
         font-weight: 800;
     }
@@ -494,6 +495,11 @@ st.markdown("""
         border-radius: 18px;
         padding: 0.4rem 0.65rem 0.55rem 0.65rem;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        margin-bottom: 0.9rem;
+    }
+
+    [data-testid="stRadio"] {
+        padding: 0.72rem 0.8rem 0.82rem 0.8rem;
     }
 
     [data-testid="stTextArea"] textarea {
@@ -531,6 +537,12 @@ st.markdown("""
 
         .hero-card {
             padding: 1.4rem;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .stat-subtle {
+            font-size: 0.84rem;
         }
     }
     </style>
@@ -591,14 +603,30 @@ try:
 except Exception:
     demo_text = ""
 
-st.sidebar.markdown("""<div class="sidebar-section">Academic Source</div>""", unsafe_allow_html=True)
-uploaded_file = st.sidebar.file_uploader("Upload an academic text or PDF", type=["txt", "pdf"])
-input_text = st.sidebar.text_area(
-    "Paste your course material here:",
-    height=200,
-    value=demo_text,
-    placeholder="Paste a paragraph from a lecture, article, or course material..."
-)
+st.sidebar.markdown("""<div class="sidebar-section">Input Configuration</div>""", unsafe_allow_html=True)
+input_mode = st.sidebar.radio("Input Type", ["Use course material", "Describe your lesson"])
+language_direction = st.sidebar.radio("Language Support", ["English → Finnish", "Finnish → English"])
+
+st.sidebar.markdown("""
+    <div class="sidebar-section" style="margin-top: 1.45rem;">Source Content</div>
+""", unsafe_allow_html=True)
+uploaded_file = None
+input_text = ""
+
+if input_mode == "Use course material":
+    uploaded_file = st.sidebar.file_uploader("Upload an academic text or PDF", type=["txt", "pdf"])
+    input_text = st.sidebar.text_area(
+        "Paste your course material here:",
+        height=200,
+        value=demo_text,
+        placeholder="Paste a paragraph from a lecture, article, or course material..."
+    )
+else:
+    input_text = st.sidebar.text_area(
+        "Describe your lesson (topic, students, goals, materials):",
+        height=300,
+        placeholder="e.g., A lesson about handwashing for first-year nursing students. Focus on hygiene and microbiology terms."
+    )
 
 st.sidebar.markdown("### 🚀 Generate your Language Station")
 generate_button = st.sidebar.button("🚀 Generate Language Station", type="primary")
@@ -631,8 +659,14 @@ if generate_button:
         with st.spinner("Analyzing linguistic complexity and generating multilingual learning resources..."):
             try:
                 # Call the LLM engine and store in session state
-                st.session_state.result = process_text(source_text, model_type=selected_model)
+                st.session_state.result = process_text(
+                    source_text, 
+                    model_type=selected_model,
+                    input_mode=input_mode,
+                    language_direction=language_direction
+                )
                 st.session_state.source_text_cache = source_text # Cache source text too
+                st.session_state.lang_dir_cache = language_direction # Cache language direction
             except Exception as e:
                 st.error(f"An error occurred during processing: {str(e)}")
 
@@ -653,11 +687,11 @@ if st.session_state.result:
     col1.metric("Key Terms", len(result.glossary))
     col2.metric("Activities", len(result.pedagogy_suggestions))
     col3.metric("Level", "CEFR B1")
-    col4.metric("⏱ Time to Generate", "≈10 seconds")
+    col4.metric("⏱ Teacher Time Saved", "Hours → Seconds")
     
     # Tabs
     tab1, tab2, tab3 = st.tabs([
-        "📘 Glossary",
+        "📘 Key Academic Terms (EN–FI)",
         "📝 Accessible Text",
         "🤝 Activities"
     ])
@@ -666,9 +700,9 @@ if st.session_state.result:
         st.markdown("""
             <div class="section-intro">
                 <div class="section-kicker">Academic Language Support</div>
-                <h2 class="section-title">Cognitive Glossary</h2>
+                <h2 class="section-title">📘 Key Academic Terms (EN–FI)</h2>
                 <p class="section-copy">
-                    Key academic terms with semantic scaffolding, contextual meaning, and multilingual support for faster comprehension.
+                    Verified academic terms with semantic scaffolding, and deterministic Finnish equivalents for high-stakes accuracy.
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -679,11 +713,16 @@ if st.session_state.result:
             academic_definition = html.escape(item.academic_definition)
             simple_definition = html.escape(item.simple_definition)
             cognitive_note = html.escape(item.cognitive_note)
+            
+            # Dynamic Labeling based on Mode
+            lang_dir = st.session_state.get('lang_dir_cache', "English → Finnish")
+            trans_label = "🇫🇮 Finnish:" if lang_dir == "English → Finnish" else "🇬🇧 English:"
+            
             st.markdown(f"""
             <div class="glossary-card">
                 <div class="card-meta">
                     <span class="term-chip">Academic Term</span>
-                    <span class="translation-chip"><b>🇫🇮 Finnish:</b> <span style="font-size:16px;">{translation}</span></span>
+                    <span class="translation-chip"><b>{trans_label}</b> <span style="font-size:16px;">{translation}</span></span>
                     <span class="difficulty-chip">High Cognitive Load</span>
                 </div>
                 <h3 class="term-title">{term}</h3>
@@ -737,7 +776,8 @@ if st.session_state.result:
                 </p>
             </div>
         """, unsafe_allow_html=True)
-        st.markdown("## 🤝 Collaborative Groupwork Activities")
+        st.markdown("## 🧰 Lesson Planning: Collaborative Groupwork Activities")
+        st.caption("Designed to support lesson planning with ready-to-use teaching methods")
         st.markdown("### 🧰 Ready-to-Use Classroom Activities")
         st.caption("Designed for immediate use in multilingual classrooms")
         
@@ -755,8 +795,9 @@ if st.session_state.result:
 else:
     st.markdown("""
         <div class="empty-state">
-            Upload a PDF or paste a course excerpt in the sidebar, then click <strong>Generate Language Station</strong>
-            to create a cognitive glossary, a CEFR-adapted bridge text, and ready-to-use pedagogical activities.
+            Choose your input mode in the sidebar to either upload academic material or describe a lesson plan.
+            Then click <strong>Generate Language Station</strong> to instantly create a cognitive glossary,
+            CEFR-adapted text, and ready-to-use pedagogical activities.
         </div>
     """, unsafe_allow_html=True)
 
