@@ -615,9 +615,20 @@ st.markdown("""
         padding: 0.85rem 1rem;
         font-weight: 800;
         color: white;
-        background: linear-gradient(135deg, #1e50d8 0%, #1187b1 100%);
+        background: var(--hero-gradient);
         box-shadow: 0 16px 28px rgba(24, 59, 140, 0.22);
         transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    /* Hide theme switcher from the main menu */
+    [data-testid="stMainMenu"] ul > div:first-child,
+    [data-testid="stMainMenu"] ul > li:first-child {
+        display: none !important;
+    }
+
+    /* Hide 'Made with Streamlit' and other footer elements from menu */
+    .stMainMenu div[class*="StyledMenuFooter"] {
+        display: none !important;
     }
 
     .stButton > button:hover {
