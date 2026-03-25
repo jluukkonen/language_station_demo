@@ -328,8 +328,9 @@ st.markdown("""
     }
 
     .term-chip {
-        background: var(--bg-soft-blue);
-        color: var(--blue-deep);
+        background: #fff7ea;
+        color: #8a5a00;
+        border: 1px solid rgba(217, 164, 65, 0.26);
     }
 
     .translation-chip {
@@ -374,13 +375,26 @@ st.markdown("""
     }
 
     .cognitive-note {
-        margin-top: 0.4rem;
-        padding: 0.95rem 1rem;
-        border-radius: 16px;
-        background: linear-gradient(180deg, #f3f7ff 0%, #edf4ff 100%);
-        border: 1px solid rgba(41, 94, 239, 0.10);
-        color: #28405f;
+        margin-top: 1rem;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        background: #fff9db;
+        border-left: 4px solid #fab005;
+        color: #856404;
+        font-size: 0.9rem;
+        position: relative;
         line-height: 1.65;
+    }
+
+    .cognitive-note::before {
+        content: "Teacher Insight";
+        display: block;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.05em;
+        color: #7a5600;
     }
 
     .bridge-grid {
@@ -390,8 +404,9 @@ st.markdown("""
     }
 
     .text-panel {
-        padding: 1.25rem;
-        height: 100%;
+        height: 500px;
+        overflow-y: auto;
+        padding: 1.5rem;
     }
 
     .text-panel.original {
@@ -399,8 +414,18 @@ st.markdown("""
     }
 
     .text-panel.simplified {
-        background: linear-gradient(180deg, #fcfffd 0%, #f1fbf5 100%);
-        border-color: rgba(31, 157, 99, 0.14);
+        border: 2px solid rgba(31, 157, 99, 0.3);
+        background: linear-gradient(180deg, #ffffff 0%, #f1fbf5 100%);
+        box-shadow: 0 0 20px rgba(31, 157, 99, 0.1);
+    }
+
+    .text-panel::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .text-panel::-webkit-scrollbar-thumb {
+        background: #cdd5e0;
+        border-radius: 10px;
     }
 
     .panel-label {
@@ -470,6 +495,60 @@ st.markdown("""
         font-weight: 600;
     }
 
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 1rem 0 1.4rem 0;
+    }
+
+    .kpi-tile {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 253, 0.98));
+        border-radius: 18px;
+        border: 1px solid rgba(41, 94, 239, 0.10);
+        box-shadow: var(--shadow-soft);
+        padding: 1.1rem 1.15rem;
+    }
+
+    .kpi-tile.accent-blue {
+        background: #eff5ff;
+        border-color: #d0e1ff;
+    }
+
+    .kpi-tile.accent-green {
+        background: #eefbf4;
+        border-color: rgba(31, 157, 99, 0.18);
+    }
+
+    .kpi-tile.accent-gold {
+        background: #fff8eb;
+        border-color: rgba(217, 164, 65, 0.24);
+    }
+
+    .kpi-label {
+        margin: 0;
+        color: #4d6280;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .kpi-value {
+        margin: 0.35rem 0 0 0;
+        color: var(--text-primary);
+        font-size: clamp(1.8rem, 1.3rem + 1vw, 2.4rem);
+        font-weight: 800;
+        line-height: 1.05;
+    }
+
+    .kpi-copy {
+        margin: 0.45rem 0 0 0;
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
     .empty-state {
         background: rgba(255, 255, 255, 0.88);
         border: 1px solid var(--border-soft);
@@ -531,7 +610,8 @@ st.markdown("""
 
     @media (max-width: 980px) {
         .stats-grid,
-        .bridge-grid {
+        .bridge-grid,
+        .kpi-grid {
             grid-template-columns: 1fr;
         }
 
@@ -567,6 +647,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Sidebar
+st.sidebar.markdown(f"""
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+        <div style="background: #173870; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800;">LS</div>
+        <div>
+            <div style="font-size: 14px; font-weight: 800; color: #152033; line-height:1;">Language Station</div>
+            <div style="font-size: 10px; color: #5c6b82;">UEF Multilingual Pedagogy</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 st.sidebar.markdown("""
     <div class="sidebar-shell">
         <div class="sidebar-brand">
@@ -674,6 +763,9 @@ if generate_button:
 if st.session_state.result:
     result = st.session_state.result
     source_text = st.session_state.get('source_text_cache', "")
+    source_word_count = max(len(source_text.split()), 1)
+    simplified_word_count = len(result.simplified_text.split())
+    simplification_delta = max(0, round((1 - (simplified_word_count / source_word_count)) * 100))
     
     st.markdown("""
         <div class="status-banner">
@@ -682,6 +774,31 @@ if st.session_state.result:
     """, unsafe_allow_html=True)
 
     st.info("This tool transforms monolingual materials into multilingual, translanguaging-based learning experiences.")
+
+    st.markdown(f"""
+        <div class="kpi-grid">
+            <div class="kpi-tile accent-blue">
+                <p class="kpi-label">Academic Terms</p>
+                <p class="kpi-value">{len(result.glossary)}</p>
+                <p class="kpi-copy">Priority terminology identified for multilingual support.</p>
+            </div>
+            <div class="kpi-tile accent-green">
+                <p class="kpi-label">Simplification</p>
+                <p class="kpi-value">{simplification_delta}%</p>
+                <p class="kpi-copy">Estimated reduction in language complexity for classroom access.</p>
+            </div>
+            <div class="kpi-tile">
+                <p class="kpi-label">Learning Activities</p>
+                <p class="kpi-value">{len(result.pedagogy_suggestions)}</p>
+                <p class="kpi-copy">Ready-to-use classroom activities generated from the source.</p>
+            </div>
+            <div class="kpi-tile accent-gold">
+                <p class="kpi-label">Delivery Time</p>
+                <p class="kpi-value">Seconds</p>
+                <p class="kpi-copy">Teacher preparation support delivered in a single generation cycle.</p>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Key Terms", len(result.glossary))
@@ -721,7 +838,7 @@ if st.session_state.result:
             st.markdown(f"""
             <div class="glossary-card">
                 <div class="card-meta">
-                    <span class="term-chip">Academic Term</span>
+                    <span class="term-chip">Verified Term</span>
                     <span class="translation-chip"><b>{trans_label}</b> <span style="font-size:16px;">{translation}</span></span>
                     <span class="difficulty-chip">High Cognitive Load</span>
                 </div>
