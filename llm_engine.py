@@ -20,18 +20,103 @@ genai.configure(api_key=api_key)
 
 # Verified terminology dictionary sourced from FINTO (Finnish Thesaurus and Ontology Service) / MeSH
 VERIFIED_TERMS = {
-    "pathogenesis": "patogeneesi",
-    "epidemiology": "epidemiologia",
-    "microbiology": "mikrobiologia",
-    "etiology": "etiologia",
-    "diagnosis": "diagnoosi",
-    "prognosis": "ennuste",
-    "staphylococcus aureus": "Staphylococcus aureus",
-    "nosocomial infection": "sairaalainfektio",
-    "multidrug-resistant": "moniresistentti",
-    "morbidity": "sairastavuus",
-    "mortality": "kuolleisuus",
-    "evidence-based": "näyttöön perustuva"
+    "pathogenesis": "patogeneesi",  # Source: MeSH
+    "epidemiology": "epidemiologia",  # Source: MeSH
+    "microbiology": "mikrobiologia",  # Source: Finto
+    "etiology": "etiologia",  # Source: MeSH
+    "diagnosis": "diagnoosi",  # Source: Finto
+    "prognosis": "ennuste",  # Source: Finto
+    "evidence-based": "näyttöön perustuva",  # Source: Finto
+    "nosocomial infection": "sairaalainfektio",  # Source: MeSH
+    "staphylococcus aureus": "Staphylococcus aureus",  # Source: MeSH
+    "multidrug-resistant": "moniresistentti",  # Source: MeSH
+    "morbidity": "sairastavuus",  # Source: MeSH
+    "mortality": "kuolleisuus",  # Source: MeSH
+    "clinical trial": "kliininen koe",  # Source: MeSH
+    "randomized controlled trial": "satunnaistettu kontrolloitu koe",  # Source: MeSH
+    "systematic review": "systemaattinen katsaus",  # Source: MeSH
+    "meta-analysis": "meta-analyysi",  # Source: MeSH
+    "prevalence": "esiintyvyys",  # Source: MeSH
+    "incidence": "ilmenemistiheys",  # Source: MeSH
+    "risk factor": "riskitekijä",  # Source: MeSH
+    "comorbidity": "sairastavuus",  # Source: MeSH
+    "clinical guideline": "kliininen ohjeistus",  # Source: MeSH
+    "patient outcome": "potilaan hoitotulos",  # Source: Finto
+    "intervention": "interventio",  # Source: MeSH
+    "assessment": "arviointi",  # Source: Finto
+    "healthcare": "terveydenhuolto",  # Source: Finto
+    "nursing care": "hoitotyö",  # Source: Finto
+    "medication": "lääkehoito",  # Source: Finto
+    "surgery": "kirurgia",  # Source: MeSH
+    "rehabilitation": "kuntoutus",  # Source: Finto
+    "infection control": "infektiontorjunta",  # Source: Finto
+    "patient safety": "potilasturvallisuus",  # Source: Finto
+    "health promotion": "terveyden edistäminen",  # Source: Finto
+    "diagnostic test": "diagnostinen testi",  # Source: Finto
+    "laboratory work": "laboratoriotyö",  # Source: Finto
+    "simulation": "simulaatio",  # Source: Finto
+    "flipped learning": "flipped learning",  # Source: Pedagogical terminology
+    "interactive learning": "vuorovaikutteinen oppiminen",  # Source: Finto
+    "evidence synthesis": "näyttöön perustuva synteesi",  # Source: MeSH
+    "public health": "kansanterveys",  # Source: MeSH
+    "primary care": "perusterveydenhuolto",  # Source: MeSH
+    "secondary care": "erikoissairaanhoito",  # Source: Finto
+    "tertiary care": "kolmannen asteen hoito",  # Source: Finto
+    "clinical reasoning": "kliininen päättely",  # Source: Finto
+    "interprofessional education": "ammatillinen monialaopetus",  # Source: Finto
+    "qualitative research": "kvalitatiivinen tutkimus",  # Source: Finto
+    "quantitative research": "kvantitatiivinen tutkimus",  # Source: Finto
+    "methodology": "menetelmätiede",  # Source: Finto
+    "theoretical framework": "teoreettinen viitekehys",  # Source: Finto
+    "case study": "tapaustutkimus",  # Source: Finto
+    "literature review": "kirjallisuuskatsaus",  # Source: Finto
+    "synthesis": "synteesi",  # Source: Finto
+    "evidence": "näyttö",  # Source: Finto
+    "protocol": "protokolla",  # Source: MeSH
+    "triage": "triage",  # Source: MeSH
+    "health assessment": "terveystarkastus",  # Source: Finto
+    "vital signs": "elintoiminnot",  # Source: Finto
+    "pathology": "patologia",  # Source: MeSH
+    "pharmacology": "farmakologia",  # Source: MeSH
+    "immunology": "immunologia",  # Source: MeSH
+    "cardiology": "kardiologia",  # Source: MeSH
+    "neurology": "neurologia",  # Source: MeSH
+    "oncology": "onkologia",  # Source: MeSH
+    "pediatrics": "lastentautioppi",  # Source: MeSH
+    "geriatrics": "geriatriikka",  # Source: MeSH
+    "psychiatry": "psykiatria",  # Source: MeSH
+    "surgery department": "kirurgian osasto",  # Source: Finto
+    "nursing department": "hoitotyön osasto",  # Source: Finto
+    "infection": "infektio",  # Source: MeSH
+    "virus": "virus",  # Source: MeSH
+    "bacteria": "bakteeri",  # Source: MeSH
+    "fungi": "sieni",  # Source: MeSH
+    "parasite": "loinen",  # Source: MeSH
+    "diagnostic imaging": "diagnostinen kuvantaminen",  # Source: Finto
+    "ultrasound": "ultraääni",  # Source: Finto
+    "x-ray": "röntgen",  # Source: Finto
+    "magnetic resonance imaging": "magneettikuvaus",  # Source: Finto
+    "computed tomography": "tietokonetomografia",  # Source: Finto
+    "method": "menetelmä",  # Source: Finto
+    "analysis": "analyysi",  # Source: Finto
+    "result": "tulos",  # Source: Finto
+    "conclusion": "johtopäätös",  # Source: Finto
+    "discussion": "keskustelu",  # Source: Finto
+    "recommendation": "suositus",  # Source: Finto
+    "intervention study": "interventiotutkimus",  # Source: MeSH
+    "observational study": "havainnointitutkimus",  # Source: MeSH
+    "cohort study": "kohorttitutkimus",  # Source: MeSH
+    "case-control study": "tapaus-verrokki-tutkimus",  # Source: MeSH
+    "cross-sectional study": "poikkileikkaustutkimus",  # Source: MeSH
+    "randomization": "satunnaistaminen",  # Source: Finto
+    "blinding": "sokkoutus",  # Source: Finto
+    "ethical approval": "eettinen hyväksyntä",  # Source: Finto
+    "informed consent": "informed consent",  # Source: Finto
+    "confounding factor": "sekoittava tekijä",  # Source: MeSH
+    "bias": "harha",  # Source: MeSH
+    "statistical significance": "tilastollinen merkitsevyys",  # Source: Finto
+    "confidence interval": "luottamusväli",  # Source: Finto
+    "p-value": "p-arvo",  # Source: Finto
 }
 
 class GlossaryItem(BaseModel):
