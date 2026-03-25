@@ -18,114 +18,26 @@ if not api_key:
         pass
 genai.configure(api_key=api_key)
 
-# Verified terminology dictionary sourced from FINTO (Finnish Thesaurus and Ontology Service) / MeSH
-VERIFIED_TERMS = {
-    "pathogenesis": "patogeneesi",  # Source: MeSH
-    "epidemiology": "epidemiologia",  # Source: MeSH
-    "microbiology": "mikrobiologia",  # Source: Finto
-    "etiology": "etiologia",  # Source: MeSH
-    "diagnosis": "diagnoosi",  # Source: Finto
-    "prognosis": "ennuste",  # Source: Finto
-    "evidence-based": "näyttöön perustuva",  # Source: Finto
-    "nosocomial infection": "sairaalainfektio",  # Source: MeSH
-    "staphylococcus aureus": "Staphylococcus aureus",  # Source: MeSH
-    "multidrug-resistant": "moniresistentti",  # Source: MeSH
-    "morbidity": "sairastavuus",  # Source: MeSH
-    "mortality": "kuolleisuus",  # Source: MeSH
-    "clinical trial": "kliininen koe",  # Source: MeSH
-    "randomized controlled trial": "satunnaistettu kontrolloitu koe",  # Source: MeSH
-    "systematic review": "systemaattinen katsaus",  # Source: MeSH
-    "meta-analysis": "meta-analyysi",  # Source: MeSH
-    "prevalence": "esiintyvyys",  # Source: MeSH
-    "incidence": "ilmenemistiheys",  # Source: MeSH
-    "risk factor": "riskitekijä",  # Source: MeSH
-    "comorbidity": "sairastavuus",  # Source: MeSH
-    "clinical guideline": "kliininen ohjeistus",  # Source: MeSH
-    "patient outcome": "potilaan hoitotulos",  # Source: Finto
-    "intervention": "interventio",  # Source: MeSH
-    "assessment": "arviointi",  # Source: Finto
-    "healthcare": "terveydenhuolto",  # Source: Finto
-    "nursing care": "hoitotyö",  # Source: Finto
-    "medication": "lääkehoito",  # Source: Finto
-    "surgery": "kirurgia",  # Source: MeSH
-    "rehabilitation": "kuntoutus",  # Source: Finto
-    "infection control": "infektiontorjunta",  # Source: Finto
-    "patient safety": "potilasturvallisuus",  # Source: Finto
-    "health promotion": "terveyden edistäminen",  # Source: Finto
-    "diagnostic test": "diagnostinen testi",  # Source: Finto
-    "laboratory work": "laboratoriotyö",  # Source: Finto
-    "simulation": "simulaatio",  # Source: Finto
-    "flipped learning": "flipped learning",  # Source: Pedagogical terminology
-    "interactive learning": "vuorovaikutteinen oppiminen",  # Source: Finto
-    "evidence synthesis": "näyttöön perustuva synteesi",  # Source: MeSH
-    "public health": "kansanterveys",  # Source: MeSH
-    "primary care": "perusterveydenhuolto",  # Source: MeSH
-    "secondary care": "erikoissairaanhoito",  # Source: Finto
-    "tertiary care": "kolmannen asteen hoito",  # Source: Finto
-    "clinical reasoning": "kliininen päättely",  # Source: Finto
-    "interprofessional education": "ammatillinen monialaopetus",  # Source: Finto
-    "qualitative research": "kvalitatiivinen tutkimus",  # Source: Finto
-    "quantitative research": "kvantitatiivinen tutkimus",  # Source: Finto
-    "methodology": "menetelmätiede",  # Source: Finto
-    "theoretical framework": "teoreettinen viitekehys",  # Source: Finto
-    "case study": "tapaustutkimus",  # Source: Finto
-    "literature review": "kirjallisuuskatsaus",  # Source: Finto
-    "synthesis": "synteesi",  # Source: Finto
-    "evidence": "näyttö",  # Source: Finto
-    "protocol": "protokolla",  # Source: MeSH
-    "triage": "triage",  # Source: MeSH
-    "health assessment": "terveystarkastus",  # Source: Finto
-    "vital signs": "elintoiminnot",  # Source: Finto
-    "pathology": "patologia",  # Source: MeSH
-    "pharmacology": "farmakologia",  # Source: MeSH
-    "immunology": "immunologia",  # Source: MeSH
-    "cardiology": "kardiologia",  # Source: MeSH
-    "neurology": "neurologia",  # Source: MeSH
-    "oncology": "onkologia",  # Source: MeSH
-    "pediatrics": "lastentautioppi",  # Source: MeSH
-    "geriatrics": "geriatriikka",  # Source: MeSH
-    "psychiatry": "psykiatria",  # Source: MeSH
-    "surgery department": "kirurgian osasto",  # Source: Finto
-    "nursing department": "hoitotyön osasto",  # Source: Finto
-    "infection": "infektio",  # Source: MeSH
-    "virus": "virus",  # Source: MeSH
-    "bacteria": "bakteeri",  # Source: MeSH
-    "fungi": "sieni",  # Source: MeSH
-    "parasite": "loinen",  # Source: MeSH
-    "diagnostic imaging": "diagnostinen kuvantaminen",  # Source: Finto
-    "ultrasound": "ultraääni",  # Source: Finto
-    "x-ray": "röntgen",  # Source: Finto
-    "magnetic resonance imaging": "magneettikuvaus",  # Source: Finto
-    "computed tomography": "tietokonetomografia",  # Source: Finto
-    "method": "menetelmä",  # Source: Finto
-    "analysis": "analyysi",  # Source: Finto
-    "result": "tulos",  # Source: Finto
-    "conclusion": "johtopäätös",  # Source: Finto
-    "discussion": "keskustelu",  # Source: Finto
-    "recommendation": "suositus",  # Source: Finto
-    "intervention study": "interventiotutkimus",  # Source: MeSH
-    "observational study": "havainnointitutkimus",  # Source: MeSH
-    "cohort study": "kohorttitutkimus",  # Source: MeSH
-    "case-control study": "tapaus-verrokki-tutkimus",  # Source: MeSH
-    "cross-sectional study": "poikkileikkaustutkimus",  # Source: MeSH
-    "randomization": "satunnaistaminen",  # Source: Finto
-    "blinding": "sokkoutus",  # Source: Finto
-    "ethical approval": "eettinen hyväksyntä",  # Source: Finto
-    "informed consent": "informed consent",  # Source: Finto
-    "confounding factor": "sekoittava tekijä",  # Source: MeSH
-    "bias": "harha",  # Source: MeSH
-    "statistical significance": "tilastollinen merkitsevyys",  # Source: Finto
-    "confidence interval": "luottamusväli",  # Source: Finto
-    "p-value": "p-arvo",  # Source: Finto
-}
+# Import the generated large-scale dictionaries (Run generate_dictionaries.py first)
+try:
+    from verified_academic_dictionaries import (
+        MESH_DICTIONARY, 
+        TERO_DICTIONARY, 
+        KOKO_DICTIONARY, 
+        YSO_DICTIONARY
+    )
+    # Master Dictionary with Priority: mesh > tero > koko > yso
+    VERIFIED_TERMS = {**YSO_DICTIONARY, **KOKO_DICTIONARY, **TERO_DICTIONARY, **MESH_DICTIONARY}
+except ImportError:
+    # Fallback to empty if not generated yet
+    VERIFIED_TERMS = {}
 
 class GlossaryItem(BaseModel):
     term: str = Field(description="A short academic term or key phrase (strictly 1 to 4 words max) extracted from the source text.")
-    academic_definition: str = Field(description="A concise academic definition of the term.")
+    academic_definition: str = Field(description="A deep, precise academic definition suitable for a university lecturer.")
     simple_definition: str = Field(description="A simple A2/B1 level explanation of the term.")
     cognitive_note: str = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use).")
-    # Added post-generation via static mapping
-    finnish_translation: Optional[str] = Field(description="Leave this blank. System will populate this.")
+    finnish_translation: str = Field(description="The Finnish translation of the term in its specific academic context.")
 
 class PedagogySuggestion(BaseModel):
     activity_name: str = Field(description="The catchy name of the translanguaging classroom activity.")
@@ -186,35 +98,32 @@ def process_text(text: str, model_type: str = "gemini-2.5-flash", input_mode: st
         json_data = json.loads(response.text)
         result = LanguageStationOutput(**json_data)
         
-        # Surgical Pivot: Deterministic Bidirectional Translation Mapping
+        # Hybrid Translation Architecture: Verified First → AI Fallback
         for item in result.glossary:
             term_key = item.term.lower().strip()
-            found = False
+            verified_value = None
 
             if language_direction == "English → Finnish":
                 # Normal Lookup (Key -> Value)
                 if term_key in VERIFIED_TERMS:
-                    item.finnish_translation = VERIFIED_TERMS[term_key]
-                    found = True
+                    verified_value = VERIFIED_TERMS[term_key]
                 else:
                     for key, val in VERIFIED_TERMS.items():
                         if key in term_key:
-                            item.finnish_translation = val
-                            found = True
+                            verified_value = val
                             break
-            
             else:
                 # Reverse Lookup (Value -> Key) for Finnish → English
-                # We still store it in the 'finnish_translation' field because the Pydantic schema is fixed
-                # The UI will label it correctly based on the mode.
                 for key, val in VERIFIED_TERMS.items():
                     if val.lower() == term_key or val.lower() in term_key:
-                        item.finnish_translation = key # This is the English equivalent
-                        found = True
+                        verified_value = key
                         break
             
-            if not found:
-                item.finnish_translation = "Not found in verified terminology"
+            # Apply Labels: Green for Verified, Orange for AI Fallback
+            if verified_value:
+                item.finnish_translation = f"{verified_value} 🟢 (Verified)"
+            else:
+                item.finnish_translation = f"{item.finnish_translation} 🟠 (AI-Assisted)"
         
         return result
     except Exception as e:
