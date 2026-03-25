@@ -55,11 +55,10 @@ def get_system_prompt() -> str:
         return f.read()
 
 def process_text(
-    text: str,
-    model_type: str = "gemini-2.5-flash",
     input_mode: str = "Use course material",
     language_direction: str = "English → Finnish",
-    selected_student: Optional[Dict[str, Any]] = None
+    selected_students: Optional[List[Dict[str, Any]]] = None,
+    selected_course: Optional[Dict[str, Any]] = None
 ) -> LanguageStationOutput:
     """
     Processes the raw input using Google Gemini Structured Outputs.
@@ -71,26 +70,27 @@ def process_text(
     
     system_prompt = get_system_prompt()
     
-    completed_courses = ""
-    if selected_student:
-        completed_courses = ", ".join(selected_student.get("completed_courses", [])) or "None"
+    group_context = ""
+    if selected_students:
+        group_context = "\n".join([
+            f"{s['name']} | CEFR: {s['cefr']} | Schooling: {s['schooling_language']} | Languages: {', '.join(s['linguistic_repertoire'])}"
+            for s in selected_students
+        ])
+        
+        # Add linguistic barriers if they exist
+        barriers = [f"{s['name']}: {s['linguistic_barrier']}" for s in selected_students if s.get('linguistic_barrier')]
+        if barriers:
+            group_context += "\n\nLinguistic challenges:\n" + "\n".join(barriers)
 
-    student_context = ""
-    if selected_student:
-        student_context = f"""
-Student profile:
-- Year: {selected_student['year']}
-- Program: {selected_student['program']}
-- Completed courses: {completed_courses}
-- Language level: {selected_student['cefr']}
-"""
+    course_context = selected_course["description"] if selected_course else "N/A"
 
     # Context Injection for the LLM
     context_prefix = (
         f"### TASK CONTEXT ###\n"
         f"Input Mode: {input_mode}\n"
         f"Language Focus: {language_direction}\n"
-        f"{student_context}\n"
+        f"Course Context: {course_context}\n"
+        f"\nGROUPS AND LANGUAGES:\n{group_context}\n"
     )
     
     # Initialize the model with the response schema
@@ -108,7 +108,21 @@ Student profile:
 {context_prefix}
 {system_prompt}
 
-Adapt all outputs (especially activities and simplified text) to the student's level, program, and prior knowledge.
+Adapt all outputs (especially activities and simplified text) to the group's collective level, programs, and prior knowledge.
+
+You are designing a lesson for a multilingual group of students:
+{group_context}
+
+Course context:
+{course_context}
+
+Design activities that:
+- require collaboration between students
+- explicitly use their linguistic repertoires
+- implement translanguaging (students must use multiple languages)
+- support S2 integration (learning Finnish within subject content)
+- are practical and classroom-ready
+- reference students explicitly by name (e.g. "Ask Ahmed to explain X to Aino in English before translating to Finnish")
 
 --- USER INPUT START ---
 {truncated_text}
