@@ -18,15 +18,29 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
+        --text-primary: #152033;
+        --text-secondary: #5c6b82;
+        --text-muted: #6b7a90;
         --bg-main: #f4f7fb;
         --bg-panel: rgba(255, 255, 255, 0.82);
         --bg-card: #ffffff;
         --bg-soft-blue: #eff5ff;
         --bg-soft-green: #effaf4;
         --bg-soft-ink: #eef2f8;
-        --text-primary: #152033;
-        --text-secondary: #5c6b82;
         --border-soft: rgba(22, 35, 58, 0.09);
+        --surface-elevated: rgba(255, 255, 255, 0.92);
+        --surface-interactive: rgba(255, 255, 255, 0.76);
+        --sidebar-bg: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+        --hero-gradient: linear-gradient(135deg, #173870 0%, #2154b7 42%, #0b8cad 100%);
+        --hero-glow: rgba(255, 255, 255, 0.38);
+        --hero-chip-bg: rgba(255, 255, 255, 0.13);
+        --hero-chip-border: rgba(255, 255, 255, 0.18);
+        --hero-copy-color: rgba(255, 255, 255, 0.88);
+        --success-border: rgba(31, 157, 99, 0.2);
+        --info-border: rgba(41, 94, 239, 0.2);
+        --success-text: #1f9d63;
+        --warning-text: #7a5600;
+        --scrollbar-thumb: #cdd5e0;
         --shadow-soft: 0 18px 45px rgba(23, 37, 84, 0.08);
         --shadow-hover: 0 24px 55px rgba(23, 37, 84, 0.14);
         --blue: #295eef;
@@ -39,15 +53,82 @@ st.markdown("""
         --radius-sm: 14px;
     }
 
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-primary: #f0f2f6;
+            --text-secondary: #a1b1c7;
+            --text-muted: #8fa0b8;
+            --bg-main: #0e1117;
+            --bg-panel: rgba(21, 32, 51, 0.72);
+            --bg-card: #1a1c23;
+            --bg-soft-blue: rgba(41, 94, 239, 0.12);
+            --bg-soft-green: rgba(31, 157, 99, 0.12);
+            --bg-soft-ink: rgba(107, 122, 144, 0.15);
+            --border-soft: rgba(255, 255, 255, 0.1);
+            --surface-elevated: rgba(24, 29, 39, 0.94);
+            --surface-interactive: rgba(27, 33, 45, 0.9);
+            --sidebar-bg: linear-gradient(180deg, #0f141d 0%, #121927 100%);
+            --hero-gradient: linear-gradient(135deg, #0f2347 0%, #173b85 45%, #0a5f78 100%);
+            --hero-glow: rgba(122, 161, 255, 0.16);
+            --hero-chip-bg: rgba(255, 255, 255, 0.08);
+            --hero-chip-border: rgba(255, 255, 255, 0.12);
+            --hero-copy-color: rgba(240, 242, 246, 0.84);
+            --success-border: rgba(125, 211, 168, 0.24);
+            --info-border: rgba(122, 161, 255, 0.22);
+            --success-text: #7dd3a8;
+            --warning-text: #f3cf6b;
+            --scrollbar-thumb: #526278;
+            --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.35);
+            --shadow-hover: 0 24px 55px rgba(0, 0, 0, 0.45);
+            --blue: #4d82f3;
+            --blue-deep: #7aa1ff;
+            --teal: #33b8d8;
+        }
+    }
+
+    html[data-theme="dark"],
+    body[data-theme="dark"],
+    [data-theme="dark"] {
+        --text-primary: #f0f2f6;
+        --text-secondary: #a1b1c7;
+        --text-muted: #8fa0b8;
+        --bg-main: #0e1117;
+        --bg-panel: rgba(21, 32, 51, 0.72);
+        --bg-card: #1a1c23;
+        --bg-soft-blue: rgba(41, 94, 239, 0.1);
+        --bg-soft-green: rgba(31, 157, 99, 0.1);
+        --bg-soft-ink: rgba(107, 122, 144, 0.15);
+        --border-soft: rgba(255, 255, 255, 0.1);
+        --surface-elevated: rgba(24, 29, 39, 0.94);
+        --surface-interactive: rgba(27, 33, 45, 0.9);
+        --sidebar-bg: linear-gradient(180deg, #0f141d 0%, #121927 100%);
+        --hero-gradient: linear-gradient(135deg, #0f2347 0%, #173b85 45%, #0a5f78 100%);
+        --hero-glow: rgba(122, 161, 255, 0.16);
+        --hero-chip-bg: rgba(255, 255, 255, 0.08);
+        --hero-chip-border: rgba(255, 255, 255, 0.12);
+        --hero-copy-color: rgba(240, 242, 246, 0.84);
+        --success-border: rgba(125, 211, 168, 0.24);
+        --info-border: rgba(122, 161, 255, 0.22);
+        --success-text: #7dd3a8;
+        --warning-text: #f3cf6b;
+        --scrollbar-thumb: #526278;
+        --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.35);
+        --shadow-hover: 0 24px 55px rgba(0, 0, 0, 0.45);
+        --blue: #4d82f3;
+        --blue-deep: #7aa1ff;
+        --teal: #33b8d8;
+    }
+
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
+        color: var(--text-primary);
     }
 
     [data-testid="stAppViewContainer"] {
-        background:
-            radial-gradient(circle at top left, rgba(41, 94, 239, 0.10), transparent 28%),
-            radial-gradient(circle at top right, rgba(14, 138, 168, 0.10), transparent 24%),
-            linear-gradient(180deg, #f7faff 0%, #f4f7fb 100%);
+        background: var(--bg-main);
+        background-image:
+            radial-gradient(circle at top left, rgba(41, 94, 239, 0.12), transparent 35%),
+            radial-gradient(circle at top right, rgba(14, 138, 168, 0.10), transparent 30%);
     }
 
     .main .block-container {
@@ -57,8 +138,8 @@ st.markdown("""
     }
 
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
-        border-right: 1px solid rgba(22, 35, 58, 0.08);
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--border-soft);
     }
 
     [data-testid="stSidebar"] > div:first-child {
@@ -70,8 +151,8 @@ st.markdown("""
     }
 
     .sidebar-brand {
-        background: linear-gradient(135deg, rgba(41, 94, 239, 0.12), rgba(14, 138, 168, 0.10));
-        border: 1px solid rgba(41, 94, 239, 0.10);
+        background: linear-gradient(135deg, rgba(41, 94, 239, 0.15), rgba(14, 138, 168, 0.12));
+        border: 1px solid var(--border-soft);
         border-radius: 22px;
         padding: 1rem 1rem 0.95rem 1rem;
         box-shadow: var(--shadow-soft);
@@ -108,7 +189,7 @@ st.markdown("""
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: #6b7a90;
+        color: var(--text-muted);
     }
 
     .hero-card {
@@ -117,8 +198,8 @@ st.markdown("""
         padding: 2rem 2rem 1.7rem 2rem;
         border-radius: 28px;
         background:
-            radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.38), transparent 18%),
-            linear-gradient(135deg, #173870 0%, #2154b7 42%, #0b8cad 100%);
+            radial-gradient(circle at 90% 10%, var(--hero-glow), transparent 18%),
+            var(--hero-gradient);
         box-shadow: 0 28px 70px rgba(24, 59, 140, 0.23);
         border: 1px solid rgba(255, 255, 255, 0.14);
         margin-bottom: 1.5rem;
@@ -140,8 +221,8 @@ st.markdown("""
         display: inline-block;
         padding: 0.45rem 0.75rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.13);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: var(--hero-chip-bg);
+        border: 1px solid var(--hero-chip-border);
         font-size: 0.76rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -162,7 +243,7 @@ st.markdown("""
         font-size: 1.02rem;
         line-height: 1.7;
         max-width: 760px;
-        color: rgba(255, 255, 255, 0.88);
+        color: var(--hero-copy-color);
     }
 
     .hero-badges {
@@ -174,8 +255,8 @@ st.markdown("""
     .hero-badge {
         padding: 0.58rem 0.88rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.10);
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: var(--hero-chip-bg);
+        border: 1px solid var(--hero-chip-border);
         font-size: 0.86rem;
         font-weight: 600;
         color: white;
@@ -222,7 +303,8 @@ st.markdown("""
     }
 
     .stat-card {
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--bg-panel);
+        backdrop-filter: blur(14px);
         border: 1px solid var(--border-soft);
         border-radius: 22px;
         box-shadow: var(--shadow-soft);
@@ -248,7 +330,7 @@ st.markdown("""
 
     .stat-subtle {
         margin-top: 0.45rem;
-        color: #718098;
+        color: var(--text-muted);
         font-size: 0.92rem;
     }
 
@@ -259,7 +341,7 @@ st.markdown("""
 
     .stTabs [data-baseweb="tab"] {
         height: 56px;
-        background: rgba(255, 255, 255, 0.76);
+        background: var(--surface-interactive);
         border: 1px solid var(--border-soft);
         border-radius: 18px;
         padding: 0 1.15rem;
@@ -276,7 +358,7 @@ st.markdown("""
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+        background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-soft-blue) 100%);
         color: var(--blue-deep);
         border-color: rgba(41, 94, 239, 0.22);
         box-shadow: var(--shadow-soft);
@@ -285,7 +367,7 @@ st.markdown("""
     .glossary-card,
     .planner-card,
     .text-panel {
-        background: rgba(255, 255, 255, 0.92);
+        background: var(--surface-elevated);
         border: 1px solid var(--border-soft);
         border-radius: 22px;
         box-shadow: var(--shadow-soft);
@@ -303,8 +385,9 @@ st.markdown("""
     .glossary-card {
         padding: 1.35rem;
         margin-bottom: 1rem;
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.96));
+        background: var(--bg-card);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-md);
     }
 
     .card-meta {
@@ -328,23 +411,25 @@ st.markdown("""
     }
 
     .term-chip {
-        background: #fff7ea;
-        color: #8a5a00;
-        border: 1px solid rgba(217, 164, 65, 0.26);
+        background: var(--bg-soft-blue);
+        color: var(--blue-deep);
+        border: 1px solid var(--border-soft);
     }
 
     .translation-chip {
-        background: #edf8fb;
-        color: #0c7087;
+        background: var(--bg-soft-green);
+        color: var(--success-text);
+        border: 1px solid var(--border-soft);
     }
 
     .difficulty-chip {
-        background: #fff7ea;
-        color: #9a6a00;
+        background: var(--bg-soft-ink);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-soft);
     }
 
     .planner-chip {
-        background: #eef7ff;
+        background: var(--bg-soft-blue);
         color: var(--blue-deep);
         margin-bottom: 0.8rem;
     }
@@ -378,9 +463,9 @@ st.markdown("""
         margin-top: 1rem;
         padding: 1rem 1.25rem;
         border-radius: 12px;
-        background: #fff9db;
-        border-left: 4px solid #fab005;
-        color: #856404;
+        background: var(--bg-soft-ink);
+        border-left: 4px solid var(--gold);
+        color: var(--text-primary);
         font-size: 0.9rem;
         position: relative;
         line-height: 1.65;
@@ -394,7 +479,7 @@ st.markdown("""
         font-size: 0.7rem;
         margin-bottom: 0.25rem;
         letter-spacing: 0.05em;
-        color: #7a5600;
+        color: var(--warning-text);
     }
 
     .bridge-grid {
@@ -410,13 +495,14 @@ st.markdown("""
     }
 
     .text-panel.original {
-        background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+        background: var(--bg-card);
+        border: 1px solid var(--border-soft);
     }
 
     .text-panel.simplified {
-        border: 2px solid rgba(31, 157, 99, 0.3);
-        background: linear-gradient(180deg, #ffffff 0%, #f1fbf5 100%);
-        box-shadow: 0 0 20px rgba(31, 157, 99, 0.1);
+        border: 2px solid var(--success-border);
+        background: var(--bg-card);
+        box-shadow: 0 0 20px rgba(31, 157, 99, 0.05);
     }
 
     .text-panel::-webkit-scrollbar {
@@ -424,7 +510,7 @@ st.markdown("""
     }
 
     .text-panel::-webkit-scrollbar-thumb {
-        background: #cdd5e0;
+        background: var(--scrollbar-thumb);
         border-radius: 10px;
     }
 
@@ -441,12 +527,12 @@ st.markdown("""
 
     .panel-label.original {
         background: var(--bg-soft-ink);
-        color: #50627d;
+        color: var(--text-secondary);
     }
 
     .panel-label.simplified {
         background: var(--bg-soft-green);
-        color: #187b4d;
+        color: var(--success-text);
     }
 
     .panel-title {
@@ -467,7 +553,9 @@ st.markdown("""
     .planner-card {
         padding: 1.3rem;
         margin-bottom: 1rem;
-        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        background: var(--bg-card);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-md);
     }
 
     .planner-title {
@@ -485,9 +573,9 @@ st.markdown("""
     }
 
     .status-banner {
-        background: linear-gradient(180deg, #f4fcf7 0%, #eefbf4 100%);
-        border: 1px solid rgba(31, 157, 99, 0.15);
-        color: #176a43;
+        background: var(--bg-soft-green);
+        border: 1px solid var(--success-border);
+        color: var(--success-text);
         border-radius: 18px;
         padding: 0.95rem 1rem;
         box-shadow: var(--shadow-soft);
@@ -503,31 +591,31 @@ st.markdown("""
     }
 
     .kpi-tile {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 253, 0.98));
+        background: var(--bg-card);
         border-radius: 18px;
-        border: 1px solid rgba(41, 94, 239, 0.10);
+        border: 1px solid var(--border-soft);
         box-shadow: var(--shadow-soft);
         padding: 1.1rem 1.15rem;
     }
 
     .kpi-tile.accent-blue {
-        background: #eff5ff;
-        border-color: #d0e1ff;
+        background: var(--bg-soft-blue);
+        border-color: var(--info-border);
     }
 
     .kpi-tile.accent-green {
-        background: #eefbf4;
-        border-color: rgba(31, 157, 99, 0.18);
+        background: var(--bg-soft-green);
+        border-color: var(--success-border);
     }
 
     .kpi-tile.accent-gold {
-        background: #fff8eb;
-        border-color: rgba(217, 164, 65, 0.24);
+        background: rgba(217, 164, 65, 0.1);
+        border-color: rgba(217, 164, 65, 0.3);
     }
 
     .kpi-label {
         margin: 0;
-        color: #4d6280;
+        color: var(--text-muted);
         font-size: 0.74rem;
         font-weight: 800;
         letter-spacing: 0.12em;
@@ -550,7 +638,8 @@ st.markdown("""
     }
 
     .empty-state {
-        background: rgba(255, 255, 255, 0.88);
+        background: var(--bg-panel);
+        backdrop-filter: blur(8px);
         border: 1px solid var(--border-soft);
         border-radius: 24px;
         box-shadow: var(--shadow-soft);
@@ -561,7 +650,7 @@ st.markdown("""
 
     .footer-note {
         text-align: center;
-        color: #6d7b91;
+        color: var(--text-muted);
         font-size: 0.9rem;
         padding: 0.5rem 0 0.2rem 0;
     }
@@ -569,11 +658,11 @@ st.markdown("""
     [data-testid="stFileUploader"],
     [data-testid="stTextArea"],
     [data-testid="stRadio"] {
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(22, 35, 58, 0.07);
+        background: var(--surface-interactive);
+        border: 1px solid var(--border-soft);
         border-radius: 18px;
         padding: 0.4rem 0.65rem 0.55rem 0.65rem;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         margin-bottom: 0.9rem;
     }
 
@@ -649,10 +738,10 @@ st.markdown("""
 # Sidebar
 st.sidebar.markdown(f"""
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-        <div style="background: #173870; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800;">LS</div>
+        <div style="background: var(--blue-deep); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800;">LS</div>
         <div>
-            <div style="font-size: 14px; font-weight: 800; color: #152033; line-height:1;">Language Station</div>
-            <div style="font-size: 10px; color: #5c6b82;">UEF Multilingual Pedagogy</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); line-height:1;">Language Station</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">UEF Multilingual Pedagogy</div>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -722,17 +811,17 @@ generate_button = st.sidebar.button("Generate Language Station", type="primary")
 
 # Data Attribution & Licensing (Small, muted text for compliance)
 st.sidebar.markdown("""
-    <div style="margin-top: 3rem; border-top: 1px solid rgba(22, 35, 58, 0.1); padding-top: 1rem;">
-        <p style="font-size: 11px; font-weight: 700; color: #6c757d; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Data Attribution Notice</p>
-        <p style="font-size: 10px; color: #6c757d; line-height: 1.5; margin-bottom: 10px;">
+    <div style="margin-top: 3rem; border-top: 1px solid var(--border-soft); padding-top: 1rem;">
+        <p style="font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Data Attribution Notice</p>
+        <p style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
             This terminology dataset utilizes deterministic mappings to ensure clinical and academic reliability. It includes content from the following authoritative sources:
         </p>
-        <ul style="font-size: 10px; color: #6c757d; line-height: 1.5; padding-left: 14px; margin-bottom: 10px;">
-            <li><strong>Finto.fi / National Library of Finland:</strong> YSO, KOKO, and TERO Ontologies. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY 4.0</a>.</li>
-            <li><strong>FinMeSH:</strong> Finnish translation of Medical Subject Headings. Produced by the National Library of Finland. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY 4.0</a>. (Original MeSH data courtesy of the U.S. National Library of Medicine).</li>
-            <li><strong>Tieteen termipankki / Sanastokeskus:</strong> Various domain-specific vocabularies. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color: #6c757d; text-decoration: underline;">CC BY-SA 4.0</a>.</li>
+        <ul style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; padding-left: 14px; margin-bottom: 10px;">
+            <li><strong>Finto.fi / National Library of Finland:</strong> YSO, KOKO, and TERO Ontologies. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>.</li>
+            <li><strong>FinMeSH:</strong> Finnish translation of Medical Subject Headings. Produced by the National Library of Finland. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>. (Original MeSH data courtesy of the U.S. National Library of Medicine).</li>
+            <li><strong>Tieteen termipankki / Sanastokeskus:</strong> Various domain-specific vocabularies. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY-SA 4.0</a>.</li>
         </ul>
-        <p style="font-size: 10px; color: #6c757d; font-style: italic; line-height: 1.4;">
+        <p style="font-size: 10px; color: var(--text-secondary); font-style: italic; line-height: 1.4;">
             <strong>Disclaimer:</strong> This data is utilized as-is for terminology mapping purposes. Providers bear no responsibility for any modifications or applications of this tool.
         </p>
     </div>
