@@ -7,7 +7,7 @@ from llm_engine import process_text
 # Page Config
 st.set_page_config(
     page_title="Language Station",
-    page_icon="🏫",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -628,8 +628,8 @@ else:
         placeholder="e.g., A lesson about handwashing for first-year nursing students. Focus on hygiene and microbiology terms."
     )
 
-st.sidebar.markdown("### 🚀 Generate your Language Station")
-generate_button = st.sidebar.button("🚀 Generate Language Station", type="primary")
+st.sidebar.markdown("### Generate Language Station")
+generate_button = st.sidebar.button("Generate Language Station", type="primary")
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
@@ -650,11 +650,11 @@ if generate_button:
         source_text = input_text
     
     if not source_text.strip():
-        st.warning("⚠️ Please enter or upload an academic text to generate outputs.")
+        st.warning("Please enter or upload an academic text to generate outputs.")
     else:
         # UI Warning for truncation
         if len(source_text) > 15000:
-            st.info("💡 **Note:** The source text is very long. We've truncated it to the most relevant first 15,000 characters for the analysis.")
+            st.info("Note: The source text is very long. We have truncated it to the most relevant first 15,000 characters for the analysis.")
         
         with st.spinner("Analyzing linguistic complexity and generating multilingual learning resources..."):
             try:
@@ -681,26 +681,26 @@ if st.session_state.result:
         </div>
     """, unsafe_allow_html=True)
 
-    st.info("🌍 This tool transforms monolingual materials into multilingual, translanguaging-based learning experiences.")
+    st.info("This tool transforms monolingual materials into multilingual, translanguaging-based learning experiences.")
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Key Terms", len(result.glossary))
     col2.metric("Activities", len(result.pedagogy_suggestions))
     col3.metric("Level", "CEFR B1")
-    col4.metric("⏱ Teacher Time Saved", "Hours → Seconds")
+    col4.metric("Teacher Time Saved", "Hours to Seconds")
     
     # Tabs
     tab1, tab2, tab3 = st.tabs([
-        "📘 Key Academic Terms (EN–FI)",
-        "📝 Accessible Text",
-        "🤝 Activities"
+        "Key Academic Terms",
+        "Accessible Text",
+        "Learning Activities"
     ])
     
     with tab1:
         st.markdown("""
             <div class="section-intro">
                 <div class="section-kicker">Academic Language Support</div>
-                <h2 class="section-title">📘 Key Academic Terms (EN–FI)</h2>
+                <h2 class="section-title">Key Academic Terms</h2>
                 <p class="section-copy">
                     Verified academic terms with semantic scaffolding, and deterministic Finnish equivalents for high-stakes accuracy.
                 </p>
@@ -716,7 +716,7 @@ if st.session_state.result:
             
             # Dynamic Labeling based on Mode
             lang_dir = st.session_state.get('lang_dir_cache', "English → Finnish")
-            trans_label = "🇫🇮 Finnish:" if lang_dir == "English → Finnish" else "🇬🇧 English:"
+            trans_label = "Finnish:" if lang_dir == "English → Finnish" else "English:"
             
             st.markdown(f"""
             <div class="glossary-card">
@@ -746,7 +746,7 @@ if st.session_state.result:
                 </p>
             </div>
         """, unsafe_allow_html=True)
-        st.subheader("📝 Accessible Version for Understanding & Discussion (CEFR B1)")
+        st.subheader("Accessible Version for Understanding and Discussion (CEFR B1)")
 
         display_text = source_text[:15000] + "..." if len(source_text) > 15000 else source_text
         original_text = html.escape(display_text)
@@ -776,9 +776,9 @@ if st.session_state.result:
                 </p>
             </div>
         """, unsafe_allow_html=True)
-        st.markdown("## 🧰 Lesson Planning: Collaborative Groupwork Activities")
-        st.caption("Designed to support lesson planning with ready-to-use teaching methods")
-        st.markdown("### 🧰 Ready-to-Use Classroom Activities")
+        st.markdown("## Lesson Planning: Collaborative Groupwork Activities")
+        st.caption("Designed to support lesson planning with ready-to-use teaching methods.")
+        st.markdown("### Ready-to-Use Classroom Activities")
         st.caption("Designed for immediate use in multilingual classrooms")
         
         for i, activity in enumerate(result.pedagogy_suggestions, 1):
@@ -791,7 +791,7 @@ if st.session_state.result:
                 <p class="planner-copy">{instructions}</p>
             </div>
             """, unsafe_allow_html=True)
-        st.caption("⬇️ Copy and use these directly in your classroom")
+        st.caption("Copy and use these directly in your classroom.")
 else:
     st.markdown("""
         <div class="empty-state">
