@@ -33,7 +33,7 @@ class GlossaryItem(BaseModel):
     simple_definition: str = Field(description="A simple A2/B1 level explanation of the term.")
     cognitive_note: str = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use).")
     # Added post-generation via static mapping
-    finnish_translation: Optional[str] = Field(default="Not found in verified terminology")
+    finnish_translation: Optional[str] = Field(description="Leave this blank. System will populate this.")
 
 class PedagogySuggestion(BaseModel):
     activity_name: str = Field(description="The catchy name of the translanguaging classroom activity.")
