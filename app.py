@@ -1173,21 +1173,9 @@ st.sidebar.markdown("""
                 Prepare multilingual classroom support in a single flow with outputs ready for teaching use.
             </p>
         </div>
-        <div class="sidebar-section">Model Selection</div>
     </div>
 """, unsafe_allow_html=True)
-model_choice = st.sidebar.radio(
-    "Select Model Engine:",
-    ["Fast Mode (gemini-2.5-flash)", "High Quality (gemini-2.5-pro)"],
-    index=0
-)
-
-# Map UI selection to actual model names
-model_map = {
-    "Fast Mode (gemini-2.5-flash)": "gemini-2.5-flash",
-    "High Quality (gemini-2.5-pro)": "gemini-2.5-pro"
-}
-selected_model = model_map[model_choice]
+selected_model = "gemini-2.5-flash"
 
 # Initialize session state for the result and source text
 if 'result' not in st.session_state:
@@ -1211,7 +1199,7 @@ except Exception:
 if "source_text_input" not in st.session_state:
     st.session_state.source_text_input = demo_text
 
-st.sidebar.markdown("""<div class="sidebar-section">Input Configuration</div>""", unsafe_allow_html=True)
+st.sidebar.markdown("""<div class="sidebar-section">Teaching Setup</div>""", unsafe_allow_html=True)
 input_mode = st.sidebar.radio("Input Type", ["Use course material", "Describe your lesson"])
 source_material_mode = "Single file"
 if input_mode == "Use course material":
@@ -1317,12 +1305,12 @@ if selected_students:
             """, unsafe_allow_html=True)
 
 st.sidebar.markdown("""
-    <div class="sidebar-section" style="margin-top: 1.45rem;">Source Content</div>
+    <div class="sidebar-section" style="margin-top: 1.2rem;">Source Material</div>
 """, unsafe_allow_html=True)
 uploaded_file = None
 uploaded_files = []
 if input_mode == "Use course material":
-    st.sidebar.markdown('<p style="font-size: 0.8rem; margin-bottom: 0px; font-weight: 600;">Quick Load Samples:</p>', unsafe_allow_html=True)
+    st.sidebar.markdown('<p style="font-size: 0.78rem; margin-bottom: 0.2rem; font-weight: 700; color: var(--text-secondary);">Sample materials</p>', unsafe_allow_html=True)
     
     # Minimalist language switch for samples
     sample_lang = st.sidebar.radio(
@@ -1333,19 +1321,27 @@ if input_mode == "Use course material":
         format_func=lambda x: {"ENG": "🇬🇧", "FIN": "🇫🇮"}[x],
         key="sample_lang_choice"
     )
-    st.sidebar.markdown('<div style="margin-top: -10px;"></div>', unsafe_allow_html=True) # Tighten spacing
+    st.sidebar.caption("Load a prepared example to preview the workflow quickly.")
     
-    cols = st.sidebar.columns(3)
     sample_keys = list(SAMPLE_TEXTS.keys())
-    for i, name in enumerate(sample_keys):
-        # Category Names: Microbiology, Public Health, Biomedical Engineering
-        btn_label = "Micro." if i == 0 else ("Health" if i == 1 else "Engin.")
-        
-        with cols[i % 3]:
+    top_left, top_right = st.sidebar.columns(2)
+    sample_button_layout = [
+        ("Microbiology", 0, top_left),
+        ("Public Health", 1, top_right),
+    ]
+
+    for btn_label, i, col in sample_button_layout:
+        with col:
             if st.button(btn_label, key=f"btn_sample_{i}", use_container_width=True):
                 lang_key = "en" if sample_lang == "ENG" else "fi"
-                st.session_state.source_text_input = SAMPLE_TEXTS[name][lang_key]
+                st.session_state.source_text_input = SAMPLE_TEXTS[sample_keys[i]][lang_key]
                 st.rerun()
+
+    if len(sample_keys) > 2:
+        if st.sidebar.button("Biomedical Engineering", key="btn_sample_2", use_container_width=True):
+            lang_key = "en" if sample_lang == "ENG" else "fi"
+            st.session_state.source_text_input = SAMPLE_TEXTS[sample_keys[2]][lang_key]
+            st.rerun()
 
     input_text = st.sidebar.text_area(
         "Paste your course material here:",
@@ -1376,23 +1372,24 @@ st.sidebar.markdown("### Generate Language Station")
 generate_button = st.sidebar.button("Generate Language Station", type="primary")
 
 # Data Attribution & Licensing (Small, muted text for compliance)
-st.sidebar.markdown("""
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-mini-card" style="margin-top: 0;">
-        <div class="sidebar-mini-title">Data Attribution Notice</div>
-        <p style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
-            This terminology dataset utilizes deterministic mappings to ensure clinical and academic reliability. It includes content from the following authoritative sources:
-        </p>
-        <ul style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; padding-left: 14px; margin-bottom: 10px;">
-            <li><strong>Finto.fi / National Library of Finland:</strong> YSO, KOKO, TERO, AFO, JUPO, KASSU, LAJISTO, and OIKO Ontologies. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>.</li>
-            <li><strong>FinMeSH:</strong> Finnish translation of Medical Subject Headings. Produced by the National Library of Finland. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>. (Original MeSH data courtesy of the U.S. National Library of Medicine).</li>
-            <li><strong>Tieteen termipankki / Sanastokeskus:</strong> Various domain-specific vocabularies. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY-SA 4.0</a>.</li>
-        </ul>
-        <p style="font-size: 10px; color: var(--text-secondary); font-style: italic; line-height: 1.4;">
-            <strong>Disclaimer:</strong> This data is utilized as-is for terminology mapping purposes. Providers bear no responsibility for any modifications or applications of this tool.
-        </p>
-    </div>
-""", unsafe_allow_html=True)
+st.sidebar.markdown("""<div class="sidebar-divider"></div>""", unsafe_allow_html=True)
+with st.sidebar.expander("Data attribution", expanded=False):
+    st.markdown("""
+        <div class="sidebar-mini-card" style="margin-top: 0;">
+            <div class="sidebar-mini-title">Data Attribution Notice</div>
+            <p style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
+                This terminology dataset utilizes deterministic mappings to ensure clinical and academic reliability. It includes content from the following authoritative sources:
+            </p>
+            <ul style="font-size: 10px; color: var(--text-secondary); line-height: 1.5; padding-left: 14px; margin-bottom: 10px;">
+                <li><strong>Finto.fi / National Library of Finland:</strong> YSO, KOKO, TERO, AFO, JUPO, KASSU, LAJISTO, and OIKO Ontologies. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>.</li>
+                <li><strong>FinMeSH:</strong> Finnish translation of Medical Subject Headings. Produced by the National Library of Finland. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY 4.0</a>. (Original MeSH data courtesy of the U.S. National Library of Medicine).</li>
+                <li><strong>Tieteen termipankki / Sanastokeskus:</strong> Various domain-specific vocabularies. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" style="color: var(--text-secondary); text-decoration: underline;">CC BY-SA 4.0</a>.</li>
+            </ul>
+            <p style="font-size: 10px; color: var(--text-secondary); font-style: italic; line-height: 1.4;">
+                <strong>Disclaimer:</strong> This data is utilized as-is for terminology mapping purposes. Providers bear no responsibility for any modifications or applications of this tool.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
 def extract_text_from_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
