@@ -48,21 +48,58 @@ except ImportError:
     # Fallback to empty if not generated yet
     VERIFIED_TERMS = {}
 
+class BilingualText(BaseModel):
+    en: str = Field(description="English version of the text.")
+    fi: str = Field(description="Finnish version of the text.")
+
+
 class GlossaryItem(BaseModel):
     term: str = Field(description="A short academic term or key phrase (strictly 1 to 4 words max) extracted from the source text.")
-    academic_definition: str = Field(description="A deep, precise academic definition suitable for a university lecturer.")
-    simple_definition: str = Field(description="A simple A2/B1 level explanation of the term.")
-    cognitive_note: str = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use).")
+    academic_definition: BilingualText = Field(description="A deep, precise academic definition suitable for a university lecturer in both English and Finnish.")
+    simple_definition: BilingualText = Field(description="A simple A2/B1 level explanation of the term in both English and Finnish.")
+    cognitive_note: BilingualText = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use) in both English and Finnish.")
     equivalent_term: str = Field(description="The equivalent term in the target language based on the 'Language Focus' context.")
 
 class PedagogySuggestion(BaseModel):
-    activity_name: str = Field(description="The catchy name of the translanguaging classroom activity.")
-    instructions: str = Field(description="Step-by-step instructions for the teacher on how to run this activity using the provided text.")
+    activity_name: BilingualText = Field(description="The catchy name of the translanguaging classroom activity in both English and Finnish.")
+    instructions: BilingualText = Field(description="Step-by-step instructions for the teacher on how to run this activity using the provided text in both English and Finnish.")
 
 class LanguageStationOutput(BaseModel):
     glossary: List[GlossaryItem] = Field(description="A list of 5-8 key academic terms extracted from the text.")
-    simplified_text: str = Field(description="The entire original text rewritten at a CEFR B1 level.")
+    simplified_text: BilingualText = Field(description="The entire original text rewritten at a CEFR B1 level in both English and Finnish.")
     pedagogy_suggestions: List[PedagogySuggestion] = Field(description="2-3 collaborative, group-based translanguaging activities based on the text.")
+
+
+def _ensure_bilingual_text(value: Any) -> BilingualText:
+    """Normalize legacy single-language strings into bilingual objects."""
+    if isinstance(value, BilingualText):
+        return value
+    if isinstance(value, dict):
+        en_value = str(value.get("en", "")).strip()
+        fi_value = str(value.get("fi", "")).strip()
+        fallback = en_value or fi_value
+        return BilingualText(
+            en=en_value or fallback,
+            fi=fi_value or fallback,
+        )
+
+    text_value = str(value or "").strip()
+    return BilingualText(en=text_value, fi=text_value)
+
+
+def _normalize_output(result: LanguageStationOutput) -> LanguageStationOutput:
+    result.simplified_text = _ensure_bilingual_text(result.simplified_text)
+
+    for item in result.glossary:
+        item.academic_definition = _ensure_bilingual_text(item.academic_definition)
+        item.simple_definition = _ensure_bilingual_text(item.simple_definition)
+        item.cognitive_note = _ensure_bilingual_text(item.cognitive_note)
+
+    for activity in result.pedagogy_suggestions:
+        activity.activity_name = _ensure_bilingual_text(activity.activity_name)
+        activity.instructions = _ensure_bilingual_text(activity.instructions)
+
+    return result
 
 def get_system_prompt() -> str:
     """Reads the system prompt from system_prompt.txt."""
@@ -85,6 +122,7 @@ def process_text(
     """
     # Truncate to ~4000 words / 15000 chars
     truncated_text = text[:15000]
+    has_group_context = bool(selected_students)
     
     system_prompt = get_system_prompt()
     
@@ -122,18 +160,7 @@ def process_text(
     )
     
     # Combine context, system prompt and user input
-    full_prompt = f"""
-{context_prefix}
-{system_prompt}
-
-Adapt all outputs (especially activities and simplified text) to the group's collective level, programs, and prior knowledge.
-
-You are designing a lesson for a multilingual group of students:
-{group_context}
-
-Course context:
-{course_context}
-
+    activity_guidance = """
 Design activities that:
 - require collaboration between students
 - explicitly use their linguistic repertoires
@@ -141,6 +168,26 @@ Design activities that:
 - support S2 integration (learning Finnish within subject content)
 - are practical and classroom-ready
 - reference students explicitly by name (e.g. "Ask Ahmed to explain X to Aino in English before translating to Finnish")
+""" if has_group_context else """
+No classroom group has been selected.
+Return an empty `pedagogy_suggestions` list and focus on glossary + simplified text only.
+Do not invent students, pair work, or group activities.
+"""
+
+    full_prompt = f"""
+{context_prefix}
+{system_prompt}
+
+Adapt all outputs (especially activities and simplified text) to the group's collective level, programs, and prior knowledge.
+Return every explanatory field in both English and Finnish exactly as required by the schema.
+
+You are designing a lesson for a multilingual group of students:
+{group_context}
+
+Course context:
+{course_context}
+
+{activity_guidance}
 
 --- USER INPUT START ---
 {truncated_text}
@@ -155,7 +202,9 @@ Design activities that:
     # Parse the JSON response
     try:
         json_data = json.loads(response.text)
-        result = LanguageStationOutput(**json_data)
+        result = _normalize_output(LanguageStationOutput(**json_data))
+        if not has_group_context:
+            result.pedagogy_suggestions = []
         
         # Hybrid Translation Architecture: Verified First → AI Fallback
         for item in result.glossary:
@@ -187,7 +236,10 @@ Design activities that:
         # Fallback error handling
         return LanguageStationOutput(
             glossary=[],
-            simplified_text=f"⚠️ Processing Error: {raw}",
+            simplified_text=BilingualText(
+                en=f"Processing error: {raw}",
+                fi=f"Kasittelyvirhe: {raw}"
+            ),
             pedagogy_suggestions=[]
         )
 

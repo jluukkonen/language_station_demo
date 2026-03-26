@@ -4,4 +4,5 @@ google-generativeai
 python-dotenv
 pydantic
 pymupdf
+python-pptx
 rdflib
