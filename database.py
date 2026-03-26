@@ -174,53 +174,6 @@ MOCK_STUDENTS = [
     }
 ]
 
-MOCK_COURSES = [
-    {
-        "name": "--- Select a Lesson Template ---",
-        "description": ""
-    },
-    {
-        "name": "TL00EY06 Microbiology in Health Sciences (4 ECTS)",
-        "description": "Topic: Mechanisms of bacterial resistance (MRSA). Goals: Understand pathogens and antibiotic protocols. Translanguaging Goal: integrate Finnish clinical vocabulary with English research."
-    },
-    {
-        "name": "TL00EY11 Public and Planetary Health (2 ECTS)",
-        "description": "Topic: Environmental health. Translanguaging Goal: compare health policies across languages."
-    },
-    {
-        "name": "S2-Integration: Biomedical Laboratory Practice",
-        "description": "Topic: Lab safety. Goal: learn Finnish safety language during engineering tasks."
-    },
-    {
-        "name": "Nursing Communication Lab: Patient Instructions",
-        "description": "Topic: Clear patient guidance in ward settings. Goals: practice plain Finnish, key clinical vocabulary, and bilingual explanation strategies for patient safety."
-    },
-    {
-        "name": "Forest Ecology Fieldwork and Species Identification",
-        "description": "Topic: Boreal forest ecosystems and tree species. Goals: connect field observations with Finnish and English scientific terminology and short oral explanations."
-    },
-    {
-        "name": "Computer Science Team Sprint: AI Ethics in Practice",
-        "description": "Topic: Ethical trade-offs in software development. Goals: discuss cases in mixed-language teams and produce concise Finnish-English project communication."
-    },
-    {
-        "name": "Education Seminar: Explaining Science to Young Learners",
-        "description": "Topic: Age-appropriate science teaching. Goals: simplify academic content, design multimodal classroom activities, and connect pedagogical theory to accessible language."
-    },
-    {
-        "name": "Social Work Case Discussion: Client Meetings",
-        "description": "Topic: Welfare services and client communication. Goals: balance professional terminology with empathetic language in Finnish and English group tasks."
-    },
-    {
-        "name": "Business Case Workshop: Sustainable Product Launch",
-        "description": "Topic: Marketing and stakeholder communication. Goals: interpret business case materials, discuss strategy in multilingual teams, and practice presentation language."
-    },
-    {
-        "name": "Environmental Science Data Lab: Water Quality",
-        "description": "Topic: Reading graphs, field data, and environmental indicators. Goals: describe evidence clearly, compare findings across languages, and use discipline-specific vocabulary accurately."
-    }
-]
-
 SAMPLE_TEXTS = {
     "Microbiology (Main Demo)": {
         "en": "Multidrug-resistant bacteria such as Staphylococcus aureus (MRSA) represent a major challenge in modern healthcare systems. These pathogens have developed resistance to multiple classes of antibiotics through genetic mutations and horizontal gene transfer mechanisms. As a result, standard treatment protocols are often ineffective, leading to prolonged hospital stays, increased morbidity, and higher mortality rates.\n\nThe pathogenesis of MRSA involves complex interactions between bacterial virulence factors and the host immune response. Key factors include biofilm formation, toxin production, and immune evasion strategies. In clinical settings, early diagnosis and infection control measures are essential to prevent nosocomial transmission and to manage outbreaks effectively.",
@@ -232,6 +185,6 @@ SAMPLE_TEXTS = {
     },
     "Biomedical Engineering": {
         "en": "Biomedical engineering integrates principles from engineering and life sciences to develop technologies that improve healthcare outcomes. In laboratory environments, strict adherence to safety protocols is essential to prevent contamination and ensure reliable experimental results. This includes proper handling of biological materials, use of personal protective equipment, and compliance with standardized operating procedures.\n\nUnderstanding technical terminology in both English and Finnish is crucial for students participating in bilingual laboratory courses. Mastery of safety instructions and equipment-related vocabulary supports both academic success and professional readiness in international work environments.",
-        "fi": "Biolääketieteellinen tekniikka yhdistää insinööritieteiden ja biotieteiden periaatteita kehittääkseen terveydenhuoltoa parantavia teknologioita. Laboratorioympäristöissä turvallisuusohjeiden tarkka noudattaminen on välttämätöntä kontaminaation ehkäisemiseksi ja luotettavien tutkimustulosten varmistamiseksi. Tämä sisältää biologisten materiaalien asianmukaisen käsittelyn, suojavarusteiden käytön sekä standardoitujen toimintatapojen noudattamisen.\n\nSekä englannin että suomen kielen teknisen terminologian ymmäntäminen on keskeistä opiskelijoille, jotka osallistuvat kaksikielisiin laboratoriokursseihin. Turvallisuusohjeiden ja laitteistoon liittyvän sanaston hallinta tukee sekä akateemista menestystä että valmiuksia kansainväliseen työelämään."
+        "fi": "Biolääketieteellinen tekniikka yhdistää insinööritieteiden ja biotieteiden periaatteita kehittääkseen terveydenhuoltoa parantavia teknologioita. Laboratorioympäristöissä turvallisuusohjeiden tarkka noudattaminen on välttämätöntä kontaminaation ehkäisemiseksi ja luotettavien tutkimustulosten varmistamiseksi. Tämä sisältää biologisten materiaalien asianmukaisen käsittelyn, suojavarusteiden käytön sekä standardoitujen toimintatapojen noudattamisen.\n\nSekä englannin että suomen kielen teknisen terminologian ymmärtäminen on keskeistä opiskelijoille, jotka osallistuvat kaksikielisiin laboratoriokursseihin. Turvallisuusohjeiden ja laitteistoon liittyvän sanaston hallinta tukee sekä akateemista menestystä että valmiuksia kansainväliseen työelämään."
     }
 }
