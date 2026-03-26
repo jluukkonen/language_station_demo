@@ -1,5 +1,7 @@
 streamlit
+pandas
 google-generativeai
 python-dotenv
 pydantic
 pymupdf
+rdflib
