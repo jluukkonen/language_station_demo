@@ -15,6 +15,11 @@ SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
 FILE_MAPPINGS = [
     ("mesh", "MESH_DICTIONARY"),
     ("tero", "TERO_DICTIONARY"),
+    ("oiko", "OIKO_DICTIONARY"),
+    ("lajisto", "LAJISTO_DICTIONARY"),
+    ("kassu", "KASSU_DICTIONARY"),
+    ("afo", "AFO_DICTIONARY"),
+    ("jupo", "JUPO_DICTIONARY"),
     ("koko", "KOKO_DICTIONARY"),
     ("yso", "YSO_DICTIONARY")
 ]
@@ -90,7 +95,7 @@ def generate_dictionaries():
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("# -*- coding: utf-8 -*-\n")
         f.write("# Generated Academic Terminology Dictionaries\n")
-        f.write("# Priority: mesh > tero > koko > yso\n\n")
+        f.write("# Priority: MESH > TERO > OIKO > LAJISTO > KASSU > AFO > JUPO > KOKO > YSO\n\n")
 
         for dict_name, data in collected_dictionaries:
             f.write(f"{dict_name} = {{\n")

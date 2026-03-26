@@ -23,11 +23,27 @@ try:
     from verified_academic_dictionaries import (
         MESH_DICTIONARY, 
         TERO_DICTIONARY, 
+        OIKO_DICTIONARY,
+        LAJISTO_DICTIONARY,
+        KASSU_DICTIONARY,
+        AFO_DICTIONARY,
+        JUPO_DICTIONARY,
         KOKO_DICTIONARY, 
         YSO_DICTIONARY
     )
-    # Master Dictionary with Priority: mesh > tero > koko > yso
-    VERIFIED_TERMS = {**YSO_DICTIONARY, **KOKO_DICTIONARY, **TERO_DICTIONARY, **MESH_DICTIONARY}
+    # Master Dictionary – Priority (Python unpack overwrites L->R, so highest priority is last):
+    # Order: MESH > TERO > OIKO > LAJISTO > KASSU > AFO > JUPO > KOKO > YSO
+    VERIFIED_TERMS = {
+        **YSO_DICTIONARY, 
+        **KOKO_DICTIONARY, 
+        **JUPO_DICTIONARY, 
+        **AFO_DICTIONARY, 
+        **KASSU_DICTIONARY, 
+        **LAJISTO_DICTIONARY, 
+        **OIKO_DICTIONARY, 
+        **TERO_DICTIONARY, 
+        **MESH_DICTIONARY
+    }
 except ImportError:
     # Fallback to empty if not generated yet
     VERIFIED_TERMS = {}
@@ -55,6 +71,8 @@ def get_system_prompt() -> str:
         return f.read()
 
 def process_text(
+    text: str,
+    model_type: str = "gemini-2.5-flash",
     input_mode: str = "Use course material",
     language_direction: str = "English → Finnish",
     selected_students: Optional[List[Dict[str, Any]]] = None,
