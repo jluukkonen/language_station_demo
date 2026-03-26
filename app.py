@@ -1077,13 +1077,14 @@ def format_activity_sections(instructions: str, language_code: str = "en") -> di
         "why": "",
     }
 
+    task_label = r"(?:Task(?: \([^)]+\))?|Tehtävä(?: \([^)]+\))?)"
     patterns = {
-        "goal": r"(?:^|\b)(?:Goal|Tavoite):\s*(.*?)(?=\b(?:Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
-        "task": r"(?:^|\b)(?:Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?):\s*(.*?)(?=\b(?:Goal|Tavoite|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
-        "steps": r"(?:^|\b)(?:Steps?|Vaiheet?):\s*(.*?)(?=\b(?:Goal|Tavoite|Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
-        "languages": r"(?:^|\b)(?:Languages used|Käytetyt kielet):\s*(.*?)(?=\b(?:Goal|Tavoite|Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?|Steps?|Vaiheet?|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
-        "materials": r"(?:^|\b)(?:Materials?|Materiaalit):\s*(.*?)(?=\b(?:Goal|Tavoite|Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Why this works|Miksi tämä toimii):|$)",
-        "why": r"(?:^|\b)(?:Why this works|Miksi tämä toimii):\s*(.*?)(?=\b(?:Goal|Tavoite|Task(?: \(step-by-step\))?|Tehtävä(?: \(vaihe vaiheelta\))?|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit):|$)",
+        "goal": rf"(?:^|\b)(?:Goal|Tavoite):\s*(.*?)(?=\b(?:{task_label}|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
+        "task": rf"(?:^|\b){task_label}:\s*(.*?)(?=\b(?:Goal|Tavoite|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
+        "steps": rf"(?:^|\b)(?:Steps?|Vaiheet?):\s*(.*?)(?=\b(?:Goal|Tavoite|{task_label}|Languages used|Käytetyt kielet|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
+        "languages": rf"(?:^|\b)(?:Languages used|Käytetyt kielet):\s*(.*?)(?=\b(?:Goal|Tavoite|{task_label}|Steps?|Vaiheet?|Materials?|Materiaalit|Why this works|Miksi tämä toimii):|$)",
+        "materials": rf"(?:^|\b)(?:Materials?|Materiaalit):\s*(.*?)(?=\b(?:Goal|Tavoite|{task_label}|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Why this works|Miksi tämä toimii):|$)",
+        "why": rf"(?:^|\b)(?:Why this works|Miksi tämä toimii):\s*(.*?)(?=\b(?:Goal|Tavoite|{task_label}|Steps?|Vaiheet?|Languages used|Käytetyt kielet|Materials?|Materiaalit):|$)",
     }
 
     for key, pattern in patterns.items():
