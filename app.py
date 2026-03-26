@@ -4,7 +4,7 @@ import fitz  # PyMuPDF
 import html
 import re
 from llm_engine import process_text
-from database import MOCK_STUDENTS, MOCK_COURSES
+from database import MOCK_STUDENTS, MOCK_COURSES, SAMPLE_TEXTS
 
 # Page Config
 st.set_page_config(
@@ -1119,16 +1119,21 @@ model_map = {
 }
 selected_model = model_map[model_choice]
 
-# Initialize session state for the result
+# Initialize session state for the result and source text
 if 'result' not in st.session_state:
     st.session_state.result = None
+if 'source_text' not in st.session_state:
+    st.session_state.source_text = ""
 
-# Load demo text from assets if available
 try:
     with open("assets/demo_samples.txt", "r", encoding="utf-8") as f:
         demo_text = f.read()
 except Exception:
     demo_text = ""
+
+# The primary state for the input area
+if "source_text_input" not in st.session_state:
+    st.session_state.source_text_input = demo_text
 
 st.sidebar.markdown("""<div class="sidebar-section">Input Configuration</div>""", unsafe_allow_html=True)
 input_mode = st.sidebar.radio("Input Type", ["Use course material", "Describe your lesson"])
@@ -1233,16 +1238,39 @@ st.sidebar.markdown("""
     <div class="sidebar-section" style="margin-top: 1.45rem;">Source Content</div>
 """, unsafe_allow_html=True)
 uploaded_file = None
-input_text = ""
-
 if input_mode == "Use course material":
-    uploaded_file = st.sidebar.file_uploader("Upload an academic text or PDF", type=["txt", "pdf"])
+    st.sidebar.markdown('<p style="font-size: 0.8rem; margin-bottom: 0px; font-weight: 600;">Quick Load Samples:</p>', unsafe_allow_html=True)
+    
+    # Minimalist language switch for samples
+    sample_lang = st.sidebar.radio(
+        "Sample language",
+        ["ENG", "FIN"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="sample_lang_choice"
+    )
+    st.sidebar.markdown('<div style="margin-top: -10px;"></div>', unsafe_allow_html=True) # Tighten spacing
+    
+    cols = st.sidebar.columns(3)
+    sample_keys = list(SAMPLE_TEXTS.keys())
+    for i, name in enumerate(sample_keys):
+        # Category Names: Microbiology, Public Health, Biomedical Engineering
+        btn_label = "Micro." if i == 0 else ("Health" if i == 1 else "Engin.")
+        
+        with cols[i % 3]:
+            if st.button(btn_label, key=f"btn_sample_{i}", use_container_width=True):
+                lang_key = "en" if sample_lang == "ENG" else "fi"
+                st.session_state.source_text_input = SAMPLE_TEXTS[name][lang_key]
+                st.rerun()
+
     input_text = st.sidebar.text_area(
         "Paste your course material here:",
         height=200,
-        value=demo_text,
-        placeholder="Paste a paragraph from a lecture, article, or course material..."
+        placeholder="Paste a paragraph from a lecture, article, or course material...",
+        key="source_text_input"
     )
+    
+    uploaded_file = st.sidebar.file_uploader("Upload an academic text or PDF", type=["txt", "pdf"])
 else:
     # Uses the description from the top-level course selector
     input_text = st.sidebar.text_area(
@@ -1399,7 +1427,7 @@ if st.session_state.result:
         
         for item in result.glossary:
             term = html.escape(item.term)
-            translation = html.escape(item.finnish_translation)
+            translation = html.escape(item.equivalent_term)
             academic_definition = html.escape(item.academic_definition)
             simple_definition = html.escape(item.simple_definition)
             cognitive_note = html.escape(item.cognitive_note)

@@ -53,7 +53,7 @@ class GlossaryItem(BaseModel):
     academic_definition: str = Field(description="A deep, precise academic definition suitable for a university lecturer.")
     simple_definition: str = Field(description="A simple A2/B1 level explanation of the term.")
     cognitive_note: str = Field(description="A 1-sentence note explaining any polysemy or semantic variation (everyday vs. academic use).")
-    finnish_translation: str = Field(description="The Finnish translation of the term in its specific academic context.")
+    equivalent_term: str = Field(description="The equivalent term in the target language based on the 'Language Focus' context.")
 
 class PedagogySuggestion(BaseModel):
     activity_name: str = Field(description="The catchy name of the translanguaging classroom activity.")
@@ -176,9 +176,9 @@ Design activities that:
             
             # Apply Labels: Green for Verified, Orange for AI Fallback
             if verified_value:
-                item.finnish_translation = f"{verified_value} 🟢 (Verified)"
+                item.equivalent_term = f"{verified_value} 🟢 (Verified)"
             else:
-                item.finnish_translation = f"{item.finnish_translation} 🟠 (AI-Assisted)"
+                item.equivalent_term = f"{item.equivalent_term} 🟠 (AI-Assisted)"
         
         return result
     except Exception as e:
